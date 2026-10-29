@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_marginBottom="10dp"
+    android:background="#FFFFFF">
+
+    <!-- Task Title -->
+    <TextView
+        android:id="@+id/tvItemTaskTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Complete Java Lab"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#17365D"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Task Description -->
+    <TextView
+        android:id="@+id/tvItemTaskDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Finish the Android assignment."
+        android:textSize="14sp"
+        android:textColor="#555555"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Due Date -->
+    <TextView
+        android:id="@+id/tvItemTaskDueDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Due date: 2026-11-05"
+        android:textSize="14sp"
+        android:textColor="#333333"
+        android:layout_marginBottom="6dp" />
+
+    <!-- Task Priority -->
+    <TextView
+        android:id="@+id/tvItemTaskPriority"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Priority: High"
+        android:textSize="14sp"
+        android:textColor="#333333"
+        android:layout_marginBottom="6dp" />
+
+    <!-- Task Status -->
+    <TextView
+        android:id="@+id/tvItemTaskStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Status: Pending"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#17365D" />
+
+</LinearLayout>

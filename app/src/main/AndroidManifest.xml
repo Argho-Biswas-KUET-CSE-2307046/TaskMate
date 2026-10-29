@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Permission for future cloud synchronization -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Permissions for task reminders and notifications -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application
+        android:allowBackup="true"
+        android:label="TaskMate"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.TaskMate">
+
+        <!-- Main screen -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+
+        <!-- Account screens -->
+        <activity
+            android:name=".SignUpActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ForgotPasswordActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ResetPasswordActivity"
+            android:exported="false" />
+
+        <!-- Task screens -->
+        <activity
+            android:name=".AddTaskActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".TaskDetailsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".EditTaskActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ProgressActivity"
+            android:exported="false" />
+
+    </application>
+
+</manifest>

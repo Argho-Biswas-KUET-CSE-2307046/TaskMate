@@ -11,16 +11,22 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etEmail, etPassword;
     private Button btnLogin;
     private TextView tvForgotPassword, tvGoToSignUp;
 
+    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        mAuth = FirebaseAuth.getInstance();
 
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
@@ -48,6 +54,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginUser() {
+
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString();
 
@@ -58,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            etEmail.setError("Enter a valid email address");
+            etEmail.setError("Enter a valid email");
             etEmail.requestFocus();
             return;
         }
@@ -69,12 +76,42 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        Toast.makeText(
-                LoginActivity.this,
-                "Input validated! Authentication will be added next.",
-                Toast.LENGTH_SHORT
-        ).show();
+        btnLogin.setEnabled(false);
 
-        // Firebase login will be implemented later.
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+
+                    btnLogin.setEnabled(true);
+
+                    if (task.isSuccessful()) {
+
+                        Toast.makeText(
+                                LoginActivity.this,
+                                "Login successful!",
+                                Toast.LENGTH_SHORT
+                        ).show();
+
+                        Intent intent = new Intent(
+                                LoginActivity.this,
+                                TaskActivity.class
+                        );
+
+                        startActivity(intent);
+                        finish();
+
+                    } else {
+
+                        String errorMessage =
+                                task.getException() != null
+                                        ? task.getException().getMessage()
+                                        : "Please check your email and password.";
+
+                        Toast.makeText(
+                                LoginActivity.this,
+                                "Login failed: " + errorMessage,
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                });
     }
 }

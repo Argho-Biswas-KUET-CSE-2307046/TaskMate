@@ -39,6 +39,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".TaskActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".ResetPasswordActivity"
             android:exported="false" />
 

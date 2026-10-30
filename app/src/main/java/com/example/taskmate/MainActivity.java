@@ -12,53 +12,46 @@ import androidx.appcompat.app.AppCompatActivity;
 public class MainActivity extends AppCompatActivity {
 
     private TextView tvWelcome;
-    private Button btnSignUp, btnLogin;
+    private Button btnSignUp;
+    private Button btnLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Connect Java variables to XML views
         tvWelcome = findViewById(R.id.tvWelcome);
         btnSignUp = findViewById(R.id.btnSignUp);
         btnLogin = findViewById(R.id.btnLogin);
 
-        // Welcome message
+        // Check that the required XML views exist.
+        if (tvWelcome == null || btnSignUp == null || btnLogin == null) {
+            Toast.makeText(
+                    this,
+                    "Error: Check activity_main.xml view IDs.",
+                    Toast.LENGTH_LONG
+            ).show();
+            return;
+        }
+
         tvWelcome.setText("Welcome to TaskMate!");
 
-        // Open Sign Up screen
+        // Open the Sign Up screen.
         btnSignUp.setOnClickListener(v -> {
-            try {
-                Intent intent = new Intent(
-                        MainActivity.this,
-                        SignUpActivity.class
-                );
-                startActivity(intent);
-            } catch (Exception e) {
-                Toast.makeText(
-                        MainActivity.this,
-                        "Unable to open Sign Up screen.",
-                        Toast.LENGTH_SHORT
-                ).show();
-            }
+            Intent intent = new Intent(
+                    MainActivity.this,
+                    SignUpActivity.class
+            );
+            startActivity(intent);
         });
 
-        // Open Login screen
+        // Open the Login screen.
         btnLogin.setOnClickListener(v -> {
-            try {
-                Intent intent = new Intent(
-                        MainActivity.this,
-                        LoginActivity.class
-                );
-                startActivity(intent);
-            } catch (Exception e) {
-                Toast.makeText(
-                        MainActivity.this,
-                        "Unable to open Login screen.",
-                        Toast.LENGTH_SHORT
-                ).show();
-            }
+            Intent intent = new Intent(
+                    MainActivity.this,
+                    LoginActivity.class
+            );
+            startActivity(intent);
         });
     }
 }

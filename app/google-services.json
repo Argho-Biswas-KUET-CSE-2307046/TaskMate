@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "810169347014",
+    "project_id": "taskmate-a7c9b",
+    "storage_bucket": "taskmate-a7c9b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:810169347014:android:728fb060abca196bf720c7",
+        "android_client_info": {
+          "package_name": "com.example.taskmate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbeTiW96PMC8XQcCLpIR5JgX2NSXuQozM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -4,11 +4,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp"
-    android:background="#F5F7FB">
+    android:background="#F8F5FF">
 
     <LinearLayout
-        android:id="@+id/welcomeContainer"
+        android:id="@+id/splashContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -19,46 +18,41 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <ImageView
+            android:id="@+id/imgLogo"
+            android:layout_width="125dp"
+            android:layout_height="125dp"
+            android:src="@mipmap/ic_launcher"
+            android:scaleType="fitCenter"
+            android:contentDescription="TaskMate Logo"
+            android:layout_marginBottom="20dp" />
+
         <TextView
-            android:id="@+id/tvWelcome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Welcome to TaskMate!"
-            android:textSize="28sp"
+            android:text="TaskMate"
+            android:textSize="38sp"
             android:textStyle="bold"
-            android:textColor="#17365D"
+            android:textColor="#4320A0"
             android:gravity="center"
-            android:layout_marginBottom="12dp" />
+            android:layout_marginBottom="10dp" />
 
         <TextView
-            android:id="@+id/tvDescription"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Organize your tasks, manage deadlines, and stay productive every day."
+            android:text="Your Personal Task Manager"
             android:textSize="16sp"
-            android:textColor="#555555"
+            android:textColor="#30265B"
             android:gravity="center"
-            android:lineSpacingExtra="5dp"
-            android:layout_marginBottom="36dp" />
+            android:layout_marginBottom="55dp" />
 
-        <Button
-            android:id="@+id/btnSignUp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Create Account"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            android:minHeight="52dp"
-            android:layout_marginBottom="16dp" />
-
-        <Button
-            android:id="@+id/btnLogin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Login"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            android:minHeight="52dp" />
+        <ProgressBar
+            android:id="@+id/splashProgress"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:indeterminate="true"
+            android:indeterminateTint="#673AB7" />
 
     </LinearLayout>
 

@@ -1,117 +1,260 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F8F6FF"
     android:fillViewport="true"
-    android:background="#F5F7FB">
+    android:overScrollMode="never">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="20dp">
 
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/btnBack"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="‹"
+                android:textColor="#24154B"
+                android:textSize="34sp"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Add New Task"
+                android:textColor="#21164B"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+
+            <View
+                android:layout_width="40dp"
+                android:layout_height="1dp"/>
+
+        </LinearLayout>
+
+        <!-- Task Title -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Add New Task"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:textColor="#17365D"
-            android:gravity="center"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="24dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Task Title *"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:textColor="#333333" />
+            android:layout_marginTop="20dp"
+            android:text="Task Title"
+            android:textColor="#211936"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
 
         <EditText
             android:id="@+id/etTaskTitle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
+            android:layout_marginTop="7dp"
+            android:background="@drawable/bg_task_input"
             android:hint="Enter task title"
-            android:inputType="textCapSentences"
+            android:padding="14dp"
+            android:textColor="#211936"
+            android:textColorHint="#898398"
+            android:textSize="14sp"
             android:singleLine="true"
-            android:minHeight="52dp"
-            android:layout_marginBottom="16dp" />
+            android:inputType="textCapSentences"/>
 
+        <!-- Description -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
             android:text="Description"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:textColor="#333333" />
+            android:textColor="#211936"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
 
         <EditText
             android:id="@+id/etTaskDescription"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:hint="Describe your task"
-            android:inputType="textCapSentences|textMultiLine"
-            android:gravity="top|start"
-            android:padding="12dp"
-            android:layout_marginBottom="16dp" />
+            android:layout_height="88dp"
+            android:layout_marginTop="7dp"
+            android:background="@drawable/bg_task_input"
+            android:gravity="top"
+            android:hint="Enter task description"
+            android:padding="14dp"
+            android:textColor="#211936"
+            android:textColorHint="#898398"
+            android:textSize="14sp"
+            android:inputType="textCapSentences|textMultiLine"/>
 
+        <!-- Due Date -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Due Date *"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:textColor="#333333" />
+            android:layout_marginTop="18dp"
+            android:text="Due Date"
+            android:textColor="#211936"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
 
         <EditText
             android:id="@+id/etDueDate"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Select due date"
-            android:inputType="none"
-            android:focusable="false"
+            android:layout_height="52dp"
+            android:layout_marginTop="7dp"
+            android:background="@drawable/bg_task_input"
             android:clickable="true"
-            android:cursorVisible="false"
-            android:singleLine="true"
-            android:minHeight="52dp"
-            android:layout_marginBottom="16dp" />
+            android:focusable="false"
+            android:hint="Select due date"
+            android:padding="14dp"
+            android:textColor="#211936"
+            android:textColorHint="#898398"
+            android:textSize="14sp"
+            android:drawableStart="@android:drawable/ic_menu_my_calendar"
+            android:drawablePadding="10dp"/>
 
+        <!-- Due Time -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Priority"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:textColor="#333333" />
+            android:layout_marginTop="18dp"
+            android:text="Due Time"
+            android:textColor="#211936"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
 
-        <Spinner
-            android:id="@+id/spPriority"
+        <EditText
+            android:id="@+id/etDueTime"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:layout_marginBottom="28dp" />
+            android:layout_marginTop="7dp"
+            android:background="@drawable/bg_task_input"
+            android:clickable="true"
+            android:focusable="false"
+            android:hint="Select time"
+            android:padding="14dp"
+            android:textColor="#211936"
+            android:textColorHint="#898398"
+            android:textSize="14sp"
+            android:drawableStart="@android:drawable/ic_lock_idle_alarm"
+            android:drawablePadding="10dp"/>
 
+        <!-- Priority -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="Priority"
+            android:textColor="#211936"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
+
+        <RadioGroup
+            android:id="@+id/rgPriority"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <RadioButton
+                android:id="@+id/rbLow"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:button="@null"
+                android:gravity="center"
+                android:text="Low"
+                android:textColor="#16803C"
+                android:textStyle="bold"
+                android:background="@drawable/bg_priority_low"
+                android:checked="true"/>
+
+            <RadioButton
+                android:id="@+id/rbMedium"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="8dp"
+                android:button="@null"
+                android:gravity="center"
+                android:text="Medium"
+                android:textColor="#A65C00"
+                android:textStyle="bold"
+                android:background="@drawable/bg_priority_medium"/>
+
+            <RadioButton
+                android:id="@+id/rbHigh"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:button="@null"
+                android:gravity="center"
+                android:text="High"
+                android:textColor="#D62828"
+                android:textStyle="bold"
+                android:background="@drawable/bg_priority_high"/>
+
+        </RadioGroup>
+
+        <!-- Category -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="Category"
+            android:textColor="#211936"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
+
+        <Spinner
+            android:id="@+id/spCategory"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="7dp"
+            android:background="@drawable/bg_task_input"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"/>
+
+        <!-- Reminder -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="Reminder"
+            android:textColor="#211936"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
+
+        <Spinner
+            android:id="@+id/spReminder"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="7dp"
+            android:background="@drawable/bg_task_input"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"/>
+
+        <!-- Save Task -->
         <Button
             android:id="@+id/btnSaveTask"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Save Task"
+            android:layout_height="54dp"
+            android:layout_marginTop="28dp"
+            android:background="@drawable/bg_task_button"
+            android:stateListAnimator="@null"
+            android:text="✓   Save Task"
             android:textAllCaps="false"
+            android:textColor="#FFFFFF"
             android:textSize="16sp"
-            android:minHeight="52dp" />
-
-        <Button
-            android:id="@+id/btnCancelTask"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Cancel"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            android:minHeight="52dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp" />
+            android:textStyle="bold"/>
 
     </LinearLayout>
 

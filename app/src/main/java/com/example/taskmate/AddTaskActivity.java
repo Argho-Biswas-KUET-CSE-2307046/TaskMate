@@ -2,11 +2,15 @@
 package com.example.taskmate;
 
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,104 +23,295 @@ public class AddTaskActivity extends AppCompatActivity {
     private EditText etTaskTitle;
     private EditText etTaskDescription;
     private EditText etDueDate;
-    private Spinner spPriority;
-    private Button btnSaveTask, btnCancelTask;
+    private EditText etDueTime;
+
+    private RadioGroup rgPriority;
+
+    private RadioButton rbLow;
+    private RadioButton rbMedium;
+    private RadioButton rbHigh;
+
+    private Spinner spCategory;
+    private Spinner spReminder;
+
+    private Button btnSaveTask;
+    private TextView btnBack;
+
+    private TaskDatabase taskDatabase;
+
+    private String selectedTime = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_task);
 
+        initializeViews();
+
+        taskDatabase = new TaskDatabase(this);
+
+        setupSpinners();
+
+        setupDatePicker();
+
+        setupTimePicker();
+
+        setupButtons();
+    }
+
+    // Connect XML components
+    private void initializeViews() {
+
         etTaskTitle = findViewById(R.id.etTaskTitle);
         etTaskDescription = findViewById(R.id.etTaskDescription);
         etDueDate = findViewById(R.id.etDueDate);
-        spPriority = findViewById(R.id.spPriority);
+        etDueTime = findViewById(R.id.etDueTime);
+
+        rgPriority = findViewById(R.id.rgPriority);
+
+        rbLow = findViewById(R.id.rbLow);
+        rbMedium = findViewById(R.id.rbMedium);
+        rbHigh = findViewById(R.id.rbHigh);
+
+        spCategory = findViewById(R.id.spCategory);
+        spReminder = findViewById(R.id.spReminder);
+
         btnSaveTask = findViewById(R.id.btnSaveTask);
-        btnCancelTask = findViewById(R.id.btnCancelTask);
+        btnBack = findViewById(R.id.btnBack);
+    }
 
-        // Set the available task priorities.
-        String[] priorities = {"Low", "Medium", "High"};
+    // Configure category and reminder options
+    private void setupSpinners() {
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_spinner_item,
-                priorities
-        );
+        String[] categories = {
+                "Personal",
+                "Study",
+                "Work",
+                "Shopping",
+                "Health",
+                "Other"
+        };
 
-        adapter.setDropDownViewResource(
+        ArrayAdapter<String> categoryAdapter =
+                new ArrayAdapter<>(
+                        this,
+                        android.R.layout.simple_spinner_item,
+                        categories
+                );
+
+        categoryAdapter.setDropDownViewResource(
                 android.R.layout.simple_spinner_dropdown_item
         );
 
-        spPriority.setAdapter(adapter);
+        spCategory.setAdapter(categoryAdapter);
 
-        // Open the date picker when the date field is clicked.
+        String[] reminders = {
+                "No reminder",
+                "At time of task",
+                "5 minutes before",
+                "10 minutes before",
+                "30 minutes before",
+                "1 hour before",
+                "1 day before"
+        };
+
+        ArrayAdapter<String> reminderAdapter =
+                new ArrayAdapter<>(
+                        this,
+                        android.R.layout.simple_spinner_item,
+                        reminders
+                );
+
+        reminderAdapter.setDropDownViewResource(
+                android.R.layout.simple_spinner_dropdown_item
+        );
+
+        spReminder.setAdapter(reminderAdapter);
+    }
+
+    // Open date picker
+    private void setupDatePicker() {
+
         etDueDate.setFocusable(false);
         etDueDate.setClickable(true);
-        etDueDate.setOnClickListener(v -> showDatePicker());
+
+        etDueDate.setOnClickListener(v -> {
+
+            Calendar calendar = Calendar.getInstance();
+
+            DatePickerDialog datePicker =
+                    new DatePickerDialog(
+                            this,
+                            (view, year, month, day) -> {
+
+                                String date = String.format(
+                                        Locale.US,
+                                        "%04d-%02d-%02d",
+                                        year,
+                                        month + 1,
+                                        day
+                                );
+
+                                etDueDate.setText(date);
+                            },
+                            calendar.get(Calendar.YEAR),
+                            calendar.get(Calendar.MONTH),
+                            calendar.get(Calendar.DAY_OF_MONTH)
+                    );
+
+            datePicker.getDatePicker().setMinDate(
+                    System.currentTimeMillis() - 1000
+            );
+
+            datePicker.show();
+        });
+    }
+
+    // Open time picker
+    private void setupTimePicker() {
+
+        etDueTime.setFocusable(false);
+        etDueTime.setClickable(true);
+
+        etDueTime.setOnClickListener(v -> {
+
+            Calendar calendar = Calendar.getInstance();
+
+            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+            int minute = calendar.get(Calendar.MINUTE);
+
+            TimePickerDialog timePicker =
+                    new TimePickerDialog(
+                            this,
+                            (view, selectedHour, selectedMinute) -> {
+
+                                selectedTime = String.format(
+                                        Locale.US,
+                                        "%02d:%02d",
+                                        selectedHour,
+                                        selectedMinute
+                                );
+
+                                Calendar displayTime = Calendar.getInstance();
+
+                                displayTime.set(
+                                        Calendar.HOUR_OF_DAY,
+                                        selectedHour
+                                );
+
+                                displayTime.set(
+                                        Calendar.MINUTE,
+                                        selectedMinute
+                                );
+
+                                String formattedTime =
+                                        new java.text.SimpleDateFormat(
+                                                "hh:mm a",
+                                                Locale.getDefault()
+                                        ).format(displayTime.getTime());
+
+                                etDueTime.setText(formattedTime);
+                            },
+                            hour,
+                            minute,
+                            false
+                    );
+
+            timePicker.show();
+        });
+    }
+
+    // Configure button actions
+    private void setupButtons() {
 
         btnSaveTask.setOnClickListener(v -> saveTask());
 
-        btnCancelTask.setOnClickListener(v -> finish());
+        btnBack.setOnClickListener(v -> finish());
     }
 
-    private void showDatePicker() {
-        Calendar calendar = Calendar.getInstance();
+    // Get selected priority
+    private String getSelectedPriority() {
 
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int selectedId = rgPriority.getCheckedRadioButtonId();
 
-        DatePickerDialog datePicker = new DatePickerDialog(
-                this,
-                (view, selectedYear, selectedMonth, selectedDay) -> {
-                    String date = String.format(
-                            Locale.getDefault(),
-                            "%04d-%02d-%02d",
-                            selectedYear,
-                            selectedMonth + 1,
-                            selectedDay
-                    );
+        if (selectedId == R.id.rbHigh) {
+            return "High";
+        }
 
-                    etDueDate.setText(date);
-                },
-                year,
-                month,
-                day
-        );
+        if (selectedId == R.id.rbMedium) {
+            return "Medium";
+        }
 
-        datePicker.getDatePicker().setMinDate(
-                System.currentTimeMillis() - 1000
-        );
-
-        datePicker.show();
+        return "Low";
     }
 
+    // Validate and save task
     private void saveTask() {
+
         String title = etTaskTitle.getText().toString().trim();
+
         String description =
                 etTaskDescription.getText().toString().trim();
+
         String dueDate = etDueDate.getText().toString().trim();
-        String priority = spPriority.getSelectedItem().toString();
+
+        String priority = getSelectedPriority();
+
+        String category = spCategory.getSelectedItem().toString();
+
+        String reminder = spReminder.getSelectedItem().toString();
 
         if (title.isEmpty()) {
-            etTaskTitle.setError("Enter a task title");
+            etTaskTitle.setError("Enter task title");
             etTaskTitle.requestFocus();
             return;
         }
 
         if (dueDate.isEmpty()) {
-            etDueDate.setError("Select a due date");
+            etDueDate.setError("Select due date");
             etDueDate.requestFocus();
             return;
         }
 
-        Toast.makeText(
-                this,
-                "Task details validated! Database saving will be added next.",
-                Toast.LENGTH_LONG
-        ).show();
+        // Create Task object
+        Task task = new Task(
+                title,
+                description,
+                dueDate,
+                priority
+        );
 
-        // Later, save title, description, dueDate and priority
-        // in the local database and synchronize with the cloud.
+        // Save existing supported fields in SQLite
+        long result = taskDatabase.addTask(task);
+
+        if (result != -1) {
+
+            Toast.makeText(
+                    this,
+                    "Task saved successfully!",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            setResult(RESULT_OK);
+            finish();
+
+        } else {
+
+            Toast.makeText(
+                    this,
+                    "Unable to save task.",
+                    Toast.LENGTH_LONG
+            ).show();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        if (taskDatabase != null) {
+            taskDatabase.close();
+        }
+
+        super.onDestroy();
     }
 }

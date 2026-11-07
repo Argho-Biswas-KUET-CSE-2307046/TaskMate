@@ -1,61 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp"
     android:layout_marginBottom="10dp"
-    android:background="#FFFFFF">
+    app:cardCornerRadius="14dp"
+    app:cardElevation="3dp"
+    app:cardBackgroundColor="#FFFFFF">
 
-    <!-- Task Title -->
-    <TextView
-        android:id="@+id/tvItemTaskTitle"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Complete Java Lab"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="#17365D"
-        android:layout_marginBottom="8dp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="12dp">
 
-    <!-- Task Description -->
-    <TextView
-        android:id="@+id/tvItemTaskDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Finish the Android assignment."
-        android:textSize="14sp"
-        android:textColor="#555555"
-        android:layout_marginBottom="8dp" />
+        <!-- Task completion checkbox -->
+        <CheckBox
+            android:id="@+id/cbTaskCompleted"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:buttonTint="#6933C5"
+            android:contentDescription="Mark task as completed"/>
 
-    <!-- Due Date -->
-    <TextView
-        android:id="@+id/tvItemTaskDueDate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Due date: 2026-11-05"
-        android:textSize="14sp"
-        android:textColor="#333333"
-        android:layout_marginBottom="6dp" />
+        <!-- Task information -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingStart="8dp"
+            android:paddingEnd="6dp">
 
-    <!-- Task Priority -->
-    <TextView
-        android:id="@+id/tvItemTaskPriority"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Priority: High"
-        android:textSize="14sp"
-        android:textColor="#333333"
-        android:layout_marginBottom="6dp" />
+            <TextView
+                android:id="@+id/tvTaskTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Finish lab report"
+                android:textColor="#211936"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:ellipsize="end"/>
 
-    <!-- Task Status -->
-    <TextView
-        android:id="@+id/tvItemTaskStatus"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Status: Pending"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:textColor="#17365D" />
+            <TextView
+                android:id="@+id/tvTaskDueDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Today, 6:00 PM"
+                android:textColor="#777187"
+                android:textSize="11sp"
+                android:layout_marginTop="5dp"/>
 
-</LinearLayout>
+        </LinearLayout>
+
+        <!-- Priority label -->
+        <TextView
+            android:id="@+id/tvTaskPriority"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="High"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textColor="#D62828"
+            android:background="#FFE1E1"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:gravity="center"/>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

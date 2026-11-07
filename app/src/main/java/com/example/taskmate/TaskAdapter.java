@@ -3,6 +3,7 @@ package com.example.taskmate;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,18 +59,42 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
         Task task = taskList.get(position);
 
+        // Display task title.
         holder.tvTaskTitle.setText(task.getTitle());
 
-        holder.tvTaskDueDate.setText(
-                "Due: " + task.getDueDate()
-        );
+        // Build task information.
+        StringBuilder taskInfo = new StringBuilder();
 
-        holder.tvTaskPriority.setText(task.getPriority());
+        taskInfo.append("Due: ")
+                .append(task.getDueDate());
 
-        // Display priority color.
+        // Display due time if available.
+        if (task.getDueTime() != null
+                && !task.getDueTime().isEmpty()) {
+
+            taskInfo.append(" • ")
+                    .append(task.getDueTime());
+        }
+
+        // Display category.
+        if (task.getCategory() != null
+                && !task.getCategory().isEmpty()) {
+
+            taskInfo.append(" • ")
+                    .append(task.getCategory());
+        }
+
+        holder.tvTaskDueDate.setText(taskInfo.toString());
+
+        // Display priority.
+        String priority = task.getPriority();
+
+        holder.tvTaskPriority.setText(priority);
+
+        // Set priority background color.
         int priorityColor;
 
-        switch (task.getPriority().toLowerCase()) {
+        switch (priority.toLowerCase()) {
 
             case "high":
                 priorityColor = 0xFFFFDCDC;
@@ -85,7 +110,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         }
 
         holder.tvTaskPriority.setBackgroundTintList(
-                android.content.res.ColorStateList.valueOf(priorityColor)
+                ColorStateList.valueOf(priorityColor)
         );
 
         // Display completion status.

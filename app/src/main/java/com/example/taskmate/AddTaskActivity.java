@@ -3,7 +3,6 @@ package com.example.taskmate;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -16,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -40,6 +40,7 @@ public class AddTaskActivity extends AppCompatActivity {
 
     private TaskDatabase taskDatabase;
 
+    // Stores time in HH:mm format.
     private String selectedTime = "";
 
     @Override
@@ -184,6 +185,7 @@ public class AddTaskActivity extends AppCompatActivity {
                             this,
                             (view, selectedHour, selectedMinute) -> {
 
+                                // Store time in 24-hour format.
                                 selectedTime = String.format(
                                         Locale.US,
                                         "%02d:%02d",
@@ -191,6 +193,7 @@ public class AddTaskActivity extends AppCompatActivity {
                                         selectedMinute
                                 );
 
+                                // Display time in 12-hour format.
                                 Calendar displayTime = Calendar.getInstance();
 
                                 displayTime.set(
@@ -204,7 +207,7 @@ public class AddTaskActivity extends AppCompatActivity {
                                 );
 
                                 String formattedTime =
-                                        new java.text.SimpleDateFormat(
+                                        new SimpleDateFormat(
                                                 "hh:mm a",
                                                 Locale.getDefault()
                                         ).format(displayTime.getTime());
@@ -223,14 +226,11 @@ public class AddTaskActivity extends AppCompatActivity {
     // Set up priority selection.
     private void setupPrioritySelection() {
 
-        // Make Low the default selection.
         rbLow.setChecked(true);
 
-        // Refresh button colors whenever selection changes.
-        rgPriority.setOnCheckedChangeListener((group, checkedId) -> {
-
-            updatePriorityAppearance();
-        });
+        rgPriority.setOnCheckedChangeListener(
+                (group, checkedId) -> updatePriorityAppearance()
+        );
 
         updatePriorityAppearance();
     }
@@ -296,26 +296,41 @@ public class AddTaskActivity extends AppCompatActivity {
 
         String dueDate = etDueDate.getText().toString().trim();
 
+        String dueTime = selectedTime;
+
         String priority = getSelectedPriority();
 
+        String category =
+                spCategory.getSelectedItem().toString();
+
+        String reminder =
+                spReminder.getSelectedItem().toString();
+
+        // Validate task title.
         if (title.isEmpty()) {
+
             etTaskTitle.setError("Enter task title");
             etTaskTitle.requestFocus();
             return;
         }
 
+        // Validate due date.
         if (dueDate.isEmpty()) {
+
             etDueDate.setError("Select due date");
             etDueDate.requestFocus();
             return;
         }
 
-        // Create Task object.
+        // Create Task object with all information.
         Task task = new Task(
                 title,
                 description,
                 dueDate,
-                priority
+                dueTime,
+                priority,
+                category,
+                reminder
         );
 
         // Save task in SQLite.

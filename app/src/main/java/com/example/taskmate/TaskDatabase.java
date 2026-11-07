@@ -13,7 +13,9 @@ import java.util.List;
 public class TaskDatabase extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "taskmate.db";
-    private static final int DATABASE_VERSION = 1;
+
+    // Increased from version 1 to version 2.
+    private static final int DATABASE_VERSION = 2;
 
     private static final String TABLE_TASKS = "tasks";
 
@@ -21,13 +23,17 @@ public class TaskDatabase extends SQLiteOpenHelper {
     private static final String COL_TITLE = "title";
     private static final String COL_DESCRIPTION = "description";
     private static final String COL_DUE_DATE = "due_date";
+    private static final String COL_DUE_TIME = "due_time";
     private static final String COL_PRIORITY = "priority";
+    private static final String COL_CATEGORY = "category";
+    private static final String COL_REMINDER = "reminder";
     private static final String COL_COMPLETED = "completed";
 
     public TaskDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    // Create the database for new installations.
     @Override
     public void onCreate(SQLiteDatabase db) {
 
@@ -36,20 +42,44 @@ public class TaskDatabase extends SQLiteOpenHelper {
                 + COL_TITLE + " TEXT NOT NULL, "
                 + COL_DESCRIPTION + " TEXT, "
                 + COL_DUE_DATE + " TEXT NOT NULL, "
+                + COL_DUE_TIME + " TEXT NOT NULL DEFAULT '', "
                 + COL_PRIORITY + " TEXT NOT NULL, "
+                + COL_CATEGORY + " TEXT NOT NULL DEFAULT 'Other', "
+                + COL_REMINDER + " TEXT NOT NULL DEFAULT 'No reminder', "
                 + COL_COMPLETED + " INTEGER NOT NULL DEFAULT 0"
                 + ")";
 
         db.execSQL(createTable);
     }
 
+    // Upgrade an existing database without deleting saved tasks.
     @Override
     public void onUpgrade(
             SQLiteDatabase db,
             int oldVersion,
             int newVersion
     ) {
-        // Add database migration logic here when required.
+
+        if (oldVersion < 2) {
+
+            db.execSQL(
+                    "ALTER TABLE " + TABLE_TASKS
+                            + " ADD COLUMN " + COL_DUE_TIME
+                            + " TEXT NOT NULL DEFAULT ''"
+            );
+
+            db.execSQL(
+                    "ALTER TABLE " + TABLE_TASKS
+                            + " ADD COLUMN " + COL_CATEGORY
+                            + " TEXT NOT NULL DEFAULT 'Other'"
+            );
+
+            db.execSQL(
+                    "ALTER TABLE " + TABLE_TASKS
+                            + " ADD COLUMN " + COL_REMINDER
+                            + " TEXT NOT NULL DEFAULT 'No reminder'"
+            );
+        }
     }
 
     // Add a new task.
@@ -62,10 +92,65 @@ public class TaskDatabase extends SQLiteOpenHelper {
         values.put(COL_TITLE, task.getTitle());
         values.put(COL_DESCRIPTION, task.getDescription());
         values.put(COL_DUE_DATE, task.getDueDate());
+        values.put(COL_DUE_TIME, task.getDueTime());
         values.put(COL_PRIORITY, task.getPriority());
+        values.put(COL_CATEGORY, task.getCategory());
+        values.put(COL_REMINDER, task.getReminder());
         values.put(COL_COMPLETED, task.isCompleted() ? 1 : 0);
 
         return db.insert(TABLE_TASKS, null, values);
+    }
+
+    // Convert a database row into a Task object.
+    private Task cursorToTask(Cursor cursor) {
+
+        int id = cursor.getInt(
+                cursor.getColumnIndexOrThrow(COL_ID)
+        );
+
+        String title = cursor.getString(
+                cursor.getColumnIndexOrThrow(COL_TITLE)
+        );
+
+        String description = cursor.getString(
+                cursor.getColumnIndexOrThrow(COL_DESCRIPTION)
+        );
+
+        String dueDate = cursor.getString(
+                cursor.getColumnIndexOrThrow(COL_DUE_DATE)
+        );
+
+        String dueTime = cursor.getString(
+                cursor.getColumnIndexOrThrow(COL_DUE_TIME)
+        );
+
+        String priority = cursor.getString(
+                cursor.getColumnIndexOrThrow(COL_PRIORITY)
+        );
+
+        String category = cursor.getString(
+                cursor.getColumnIndexOrThrow(COL_CATEGORY)
+        );
+
+        String reminder = cursor.getString(
+                cursor.getColumnIndexOrThrow(COL_REMINDER)
+        );
+
+        boolean completed = cursor.getInt(
+                cursor.getColumnIndexOrThrow(COL_COMPLETED)
+        ) == 1;
+
+        return new Task(
+                id,
+                title,
+                description,
+                dueDate,
+                dueTime,
+                priority,
+                category,
+                reminder,
+                completed
+        );
     }
 
     // Get all saved tasks.
@@ -86,41 +171,7 @@ public class TaskDatabase extends SQLiteOpenHelper {
         )) {
 
             while (cursor.moveToNext()) {
-
-                int id = cursor.getInt(
-                        cursor.getColumnIndexOrThrow(COL_ID)
-                );
-
-                String title = cursor.getString(
-                        cursor.getColumnIndexOrThrow(COL_TITLE)
-                );
-
-                String description = cursor.getString(
-                        cursor.getColumnIndexOrThrow(COL_DESCRIPTION)
-                );
-
-                String dueDate = cursor.getString(
-                        cursor.getColumnIndexOrThrow(COL_DUE_DATE)
-                );
-
-                String priority = cursor.getString(
-                        cursor.getColumnIndexOrThrow(COL_PRIORITY)
-                );
-
-                boolean completed = cursor.getInt(
-                        cursor.getColumnIndexOrThrow(COL_COMPLETED)
-                ) == 1;
-
-                Task task = new Task(
-                        id,
-                        title,
-                        description,
-                        dueDate,
-                        priority,
-                        completed
-                );
-
-                taskList.add(task);
+                taskList.add(cursorToTask(cursor));
             }
         }
 
@@ -143,39 +194,7 @@ public class TaskDatabase extends SQLiteOpenHelper {
         )) {
 
             if (cursor.moveToFirst()) {
-
-                int id = cursor.getInt(
-                        cursor.getColumnIndexOrThrow(COL_ID)
-                );
-
-                String title = cursor.getString(
-                        cursor.getColumnIndexOrThrow(COL_TITLE)
-                );
-
-                String description = cursor.getString(
-                        cursor.getColumnIndexOrThrow(COL_DESCRIPTION)
-                );
-
-                String dueDate = cursor.getString(
-                        cursor.getColumnIndexOrThrow(COL_DUE_DATE)
-                );
-
-                String priority = cursor.getString(
-                        cursor.getColumnIndexOrThrow(COL_PRIORITY)
-                );
-
-                boolean completed = cursor.getInt(
-                        cursor.getColumnIndexOrThrow(COL_COMPLETED)
-                ) == 1;
-
-                return new Task(
-                        id,
-                        title,
-                        description,
-                        dueDate,
-                        priority,
-                        completed
-                );
+                return cursorToTask(cursor);
             }
         }
 
@@ -192,7 +211,10 @@ public class TaskDatabase extends SQLiteOpenHelper {
         values.put(COL_TITLE, task.getTitle());
         values.put(COL_DESCRIPTION, task.getDescription());
         values.put(COL_DUE_DATE, task.getDueDate());
+        values.put(COL_DUE_TIME, task.getDueTime());
         values.put(COL_PRIORITY, task.getPriority());
+        values.put(COL_CATEGORY, task.getCategory());
+        values.put(COL_REMINDER, task.getReminder());
         values.put(COL_COMPLETED, task.isCompleted() ? 1 : 0);
 
         return db.update(
@@ -252,29 +274,7 @@ public class TaskDatabase extends SQLiteOpenHelper {
         )) {
 
             while (cursor.moveToNext()) {
-
-                Task task = new Task(
-                        cursor.getInt(
-                                cursor.getColumnIndexOrThrow(COL_ID)
-                        ),
-                        cursor.getString(
-                                cursor.getColumnIndexOrThrow(COL_TITLE)
-                        ),
-                        cursor.getString(
-                                cursor.getColumnIndexOrThrow(COL_DESCRIPTION)
-                        ),
-                        cursor.getString(
-                                cursor.getColumnIndexOrThrow(COL_DUE_DATE)
-                        ),
-                        cursor.getString(
-                                cursor.getColumnIndexOrThrow(COL_PRIORITY)
-                        ),
-                        cursor.getInt(
-                                cursor.getColumnIndexOrThrow(COL_COMPLETED)
-                        ) == 1
-                );
-
-                taskList.add(task);
+                taskList.add(cursorToTask(cursor));
             }
         }
 

@@ -17,6 +17,11 @@ public class TaskDetailsActivity extends AppCompatActivity {
     private TextView tvPriority;
     private TextView tvTaskStatus;
 
+    // New information fields.
+    private TextView tvDueTime;
+    private TextView tvCategory;
+    private TextView tvReminder;
+
     private Button btnEditTask;
     private Button btnMarkCompleted;
     private Button btnBack;
@@ -29,12 +34,17 @@ public class TaskDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_details);
 
-        // Initialize views.
+        // Initialize existing views.
         tvTaskTitle = findViewById(R.id.tvTaskTitle);
         tvTaskDescription = findViewById(R.id.tvTaskDescription);
         tvDueDate = findViewById(R.id.tvDueDate);
         tvPriority = findViewById(R.id.tvPriority);
         tvTaskStatus = findViewById(R.id.tvTaskStatus);
+
+        // Initialize new views.
+        tvDueTime = findViewById(R.id.tvDueTime);
+        tvCategory = findViewById(R.id.tvCategory);
+        tvReminder = findViewById(R.id.tvReminder);
 
         btnEditTask = findViewById(R.id.btnEditTask);
         btnMarkCompleted = findViewById(R.id.btnMarkCompleted);
@@ -42,10 +52,11 @@ public class TaskDetailsActivity extends AppCompatActivity {
 
         database = new TaskDatabase(this);
 
-        // Receive the selected task ID.
+        // Receive selected task ID.
         int taskId = getIntent().getIntExtra("taskId", -1);
 
         if (taskId == -1) {
+
             Toast.makeText(
                     this,
                     "Task ID not received.",
@@ -56,7 +67,7 @@ public class TaskDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        // Retrieve the selected task from SQLite.
+        // Retrieve task from SQLite.
         loadTask(taskId);
 
         // Edit button.
@@ -131,9 +142,10 @@ public class TaskDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        // Display task information.
+        // Display title.
         tvTaskTitle.setText(currentTask.getTitle());
 
+        // Display description.
         String description = currentTask.getDescription();
 
         if (description == null || description.trim().isEmpty()) {
@@ -142,13 +154,42 @@ public class TaskDetailsActivity extends AppCompatActivity {
 
         tvTaskDescription.setText(description);
 
+        // Display due date.
         tvDueDate.setText(
                 "Due Date: " + currentTask.getDueDate()
         );
 
+        // Display due time.
+        String dueTime = currentTask.getDueTime();
+
+        if (dueTime == null || dueTime.isEmpty()) {
+            dueTime = "Not set";
+        }
+
+        tvDueTime.setText("Due Time: " + dueTime);
+
+        // Display priority.
         tvPriority.setText(
                 "Priority: " + currentTask.getPriority()
         );
+
+        // Display category.
+        String category = currentTask.getCategory();
+
+        if (category == null || category.isEmpty()) {
+            category = "Other";
+        }
+
+        tvCategory.setText("Category: " + category);
+
+        // Display reminder.
+        String reminder = currentTask.getReminder();
+
+        if (reminder == null || reminder.isEmpty()) {
+            reminder = "No reminder";
+        }
+
+        tvReminder.setText("Reminder: " + reminder);
 
         updateStatusDisplay();
     }

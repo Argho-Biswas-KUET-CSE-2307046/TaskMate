@@ -50,7 +50,7 @@ public class TaskActivity extends AppCompatActivity {
         updateStatistics();
     }
 
-    // Connect Java variables with XML views
+    // Connect Java variables with XML views.
     private void initializeViews() {
 
         tvWelcome = findViewById(R.id.tvWelcome);
@@ -70,7 +70,7 @@ public class TaskActivity extends AppCompatActivity {
         navProgress = findViewById(R.id.navProgress);
     }
 
-    // Display the logged-in user's name
+    // Display the logged-in user's name.
     private void showUserInformation() {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -93,7 +93,7 @@ public class TaskActivity extends AppCompatActivity {
         tvWelcome.setText("Hello, " + name + "! 👋");
     }
 
-    // Display today's date
+    // Display today's date.
     private void showCurrentDate() {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat(
@@ -104,10 +104,21 @@ public class TaskActivity extends AppCompatActivity {
         tvTodayDate.setText(dateFormat.format(new Date()));
     }
 
-    // Connect dashboard buttons
+    // Open the My Tasks screen.
+    private void openTasks() {
+
+        Intent intent = new Intent(
+                TaskActivity.this,
+                TasksActivity.class
+        );
+
+        startActivity(intent);
+    }
+
+    // Connect dashboard buttons.
     private void setupNavigation() {
 
-        // Add Task
+        // Add Task.
         actionAddTask.setOnClickListener(v -> {
 
             Intent intent = new Intent(
@@ -118,7 +129,7 @@ public class TaskActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // View Progress
+        // View Progress.
         actionProgress.setOnClickListener(v -> {
 
             Intent intent = new Intent(
@@ -129,29 +140,13 @@ public class TaskActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Open Task Details
-        navTasks.setOnClickListener(v -> {
+        // Bottom navigation: My Tasks.
+        navTasks.setOnClickListener(v -> openTasks());
 
-            Intent intent = new Intent(
-                    TaskActivity.this,
-                    TaskDetailsActivity.class
-            );
+        // View All Tasks.
+        tvViewAll.setOnClickListener(v -> openTasks());
 
-            startActivity(intent);
-        });
-
-        // View All Tasks
-        tvViewAll.setOnClickListener(v -> {
-
-            Intent intent = new Intent(
-                    TaskActivity.this,
-                    TaskDetailsActivity.class
-            );
-
-            startActivity(intent);
-        });
-
-        // Bottom navigation: Progress
+        // Bottom navigation: Progress.
         navProgress.setOnClickListener(v -> {
 
             Intent intent = new Intent(
@@ -163,22 +158,18 @@ public class TaskActivity extends AppCompatActivity {
         });
     }
 
-    // Update dashboard statistics from SQLite
+    // Update dashboard statistics from SQLite.
     private void updateStatistics() {
 
         int total = database.getTotalTaskCount();
-
         int completed = database.getCompletedTaskCount();
-
         int pending = database.getPendingTaskCount();
 
         tvTotalTasks.setText(String.valueOf(total));
-
         tvCompletedTasks.setText(String.valueOf(completed));
-
         tvPendingTasks.setText(String.valueOf(pending));
 
-        // Calculate overdue tasks
+        // Calculate overdue tasks.
         int overdue = 0;
 
         String today = new SimpleDateFormat(
@@ -200,7 +191,7 @@ public class TaskActivity extends AppCompatActivity {
         tvOverdueTasks.setText(String.valueOf(overdue));
     }
 
-    // Refresh dashboard when returning from another screen
+    // Refresh dashboard when returning to this screen.
     @Override
     protected void onResume() {
         super.onResume();

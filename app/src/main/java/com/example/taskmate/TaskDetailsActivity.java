@@ -21,17 +21,15 @@ public class TaskDetailsActivity extends AppCompatActivity {
     private Button btnMarkCompleted;
     private Button btnBack;
 
-    private String taskTitle;
-    private String taskDescription;
-    private String dueDate;
-    private String priority;
-    private String status;
+    private TaskDatabase database;
+    private Task currentTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_details);
 
+        // Initialize views.
         tvTaskTitle = findViewById(R.id.tvTaskTitle);
         tvTaskDescription = findViewById(R.id.tvTaskDescription);
         tvDueDate = findViewById(R.id.tvDueDate);
@@ -42,82 +40,159 @@ public class TaskDetailsActivity extends AppCompatActivity {
         btnMarkCompleted = findViewById(R.id.btnMarkCompleted);
         btnBack = findViewById(R.id.btnBack);
 
-        // Receive task details from the previous screen.
-        Intent intent = getIntent();
+        database = new TaskDatabase(this);
 
-        taskTitle = intent.getStringExtra("taskTitle");
-        taskDescription = intent.getStringExtra("taskDescription");
-        dueDate = intent.getStringExtra("dueDate");
-        priority = intent.getStringExtra("priority");
-        status = intent.getStringExtra("status");
+        // Receive the selected task ID.
+        int taskId = getIntent().getIntExtra("taskId", -1);
 
-        // Display the task details.
-        tvTaskTitle.setText(
-                taskTitle == null ? "Untitled Task" : taskTitle
-        );
+        if (taskId == -1) {
+            Toast.makeText(
+                    this,
+                    "Task ID not received.",
+                    Toast.LENGTH_LONG
+            ).show();
 
-        tvTaskDescription.setText(
-                taskDescription == null || taskDescription.isEmpty()
-                        ? "No description provided"
-                        : taskDescription
-        );
-
-        tvDueDate.setText(
-                "Due Date: " +
-                        (dueDate == null ? "Not set" : dueDate)
-        );
-
-        tvPriority.setText(
-                "Priority: " +
-                        (priority == null ? "Medium" : priority)
-        );
-
-        if (status == null || status.isEmpty()) {
-            status = "Pending";
+            finish();
+            return;
         }
 
-        updateStatusDisplay();
+        // Retrieve the selected task from SQLite.
+        loadTask(taskId);
 
+        // Edit button.
         btnEditTask.setOnClickListener(v -> {
+
+            if (currentTask == null) {
+                return;
+            }
+
             Intent editIntent = new Intent(
                     TaskDetailsActivity.this,
                     EditTaskActivity.class
             );
 
-            editIntent.putExtra("taskTitle", taskTitle);
-            editIntent.putExtra("taskDescription", taskDescription);
-            editIntent.putExtra("dueDate", dueDate);
-            editIntent.putExtra("priority", priority);
-            editIntent.putExtra("status", status);
+            editIntent.putExtra("taskId", currentTask.getId());
 
             startActivity(editIntent);
         });
 
+        // Mark task as completed.
         btnMarkCompleted.setOnClickListener(v -> {
-            status = "Completed";
-            updateStatusDisplay();
 
-            Toast.makeText(
-                    TaskDetailsActivity.this,
-                    "Status changed to Completed.",
-                    Toast.LENGTH_SHORT
-            ).show();
+            if (currentTask == null) {
+                return;
+            }
 
-            // Later, update the task in the database.
+            int result = database.updateTaskStatus(
+                    currentTask.getId(),
+                    true
+            );
+
+            if (result > 0) {
+
+                currentTask.setCompleted(true);
+
+                updateStatusDisplay();
+
+                Toast.makeText(
+                        this,
+                        "Task marked as completed!",
+                        Toast.LENGTH_SHORT
+                ).show();
+
+            } else {
+
+                Toast.makeText(
+                        this,
+                        "Unable to update task.",
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
         });
 
+        // Back button.
         btnBack.setOnClickListener(v -> finish());
     }
 
-    private void updateStatusDisplay() {
-        tvTaskStatus.setText("Status: " + status);
+    // Retrieve task information from SQLite.
+    private void loadTask(int taskId) {
 
-        if ("Completed".equals(status)) {
+        currentTask = database.getTaskById(taskId);
+
+        if (currentTask == null) {
+
+            Toast.makeText(
+                    this,
+                    "Task not found.",
+                    Toast.LENGTH_LONG
+            ).show();
+
+            finish();
+            return;
+        }
+
+        // Display task information.
+        tvTaskTitle.setText(currentTask.getTitle());
+
+        String description = currentTask.getDescription();
+
+        if (description == null || description.trim().isEmpty()) {
+            description = "No description provided";
+        }
+
+        tvTaskDescription.setText(description);
+
+        tvDueDate.setText(
+                "Due Date: " + currentTask.getDueDate()
+        );
+
+        tvPriority.setText(
+                "Priority: " + currentTask.getPriority()
+        );
+
+        updateStatusDisplay();
+    }
+
+    // Update task status on screen.
+    private void updateStatusDisplay() {
+
+        if (currentTask == null) {
+            return;
+        }
+
+        if (currentTask.isCompleted()) {
+
+            tvTaskStatus.setText("Status: Completed");
+
             btnMarkCompleted.setEnabled(false);
             btnMarkCompleted.setText("Task Completed");
+
         } else {
+
+            tvTaskStatus.setText("Status: Pending");
+
             btnMarkCompleted.setEnabled(true);
             btnMarkCompleted.setText("Mark as Completed");
         }
+    }
+
+    // Refresh task information when returning from Edit Task.
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (database != null && currentTask != null) {
+            loadTask(currentTask.getId());
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        if (database != null) {
+            database.close();
+        }
+
+        super.onDestroy();
     }
 }

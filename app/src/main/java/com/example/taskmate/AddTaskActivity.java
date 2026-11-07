@@ -3,6 +3,7 @@ package com.example.taskmate;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -51,15 +52,13 @@ public class AddTaskActivity extends AppCompatActivity {
         taskDatabase = new TaskDatabase(this);
 
         setupSpinners();
-
         setupDatePicker();
-
         setupTimePicker();
-
+        setupPrioritySelection();
         setupButtons();
     }
 
-    // Connect XML components
+    // Connect XML components.
     private void initializeViews() {
 
         etTaskTitle = findViewById(R.id.etTaskTitle);
@@ -80,7 +79,7 @@ public class AddTaskActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
     }
 
-    // Configure category and reminder options
+    // Configure category and reminder options.
     private void setupSpinners() {
 
         String[] categories = {
@@ -129,7 +128,7 @@ public class AddTaskActivity extends AppCompatActivity {
         spReminder.setAdapter(reminderAdapter);
     }
 
-    // Open date picker
+    // Open date picker.
     private void setupDatePicker() {
 
         etDueDate.setFocusable(false);
@@ -167,7 +166,7 @@ public class AddTaskActivity extends AppCompatActivity {
         });
     }
 
-    // Open time picker
+    // Open time picker.
     private void setupTimePicker() {
 
         etDueTime.setFocusable(false);
@@ -221,7 +220,49 @@ public class AddTaskActivity extends AppCompatActivity {
         });
     }
 
-    // Configure button actions
+    // Set up priority selection.
+    private void setupPrioritySelection() {
+
+        // Make Low the default selection.
+        rbLow.setChecked(true);
+
+        // Refresh button colors whenever selection changes.
+        rgPriority.setOnCheckedChangeListener((group, checkedId) -> {
+
+            updatePriorityAppearance();
+        });
+
+        updatePriorityAppearance();
+    }
+
+    // Update selected and unselected priority text colors.
+    private void updatePriorityAppearance() {
+
+        updateSinglePriority(rbLow, 0xFF16803C);
+        updateSinglePriority(rbMedium, 0xFFA65C00);
+        updateSinglePriority(rbHigh, 0xFFD62828);
+    }
+
+    private void updateSinglePriority(
+            RadioButton button,
+            int normalTextColor
+    ) {
+
+        if (button.isChecked()) {
+
+            button.setTextColor(0xFF211936);
+            button.setElevation(6f);
+
+        } else {
+
+            button.setTextColor(normalTextColor);
+            button.setElevation(0f);
+        }
+
+        button.refreshDrawableState();
+    }
+
+    // Configure button actions.
     private void setupButtons() {
 
         btnSaveTask.setOnClickListener(v -> saveTask());
@@ -229,7 +270,7 @@ public class AddTaskActivity extends AppCompatActivity {
         btnBack.setOnClickListener(v -> finish());
     }
 
-    // Get selected priority
+    // Get selected priority.
     private String getSelectedPriority() {
 
         int selectedId = rgPriority.getCheckedRadioButtonId();
@@ -245,7 +286,7 @@ public class AddTaskActivity extends AppCompatActivity {
         return "Low";
     }
 
-    // Validate and save task
+    // Validate and save task.
     private void saveTask() {
 
         String title = etTaskTitle.getText().toString().trim();
@@ -256,10 +297,6 @@ public class AddTaskActivity extends AppCompatActivity {
         String dueDate = etDueDate.getText().toString().trim();
 
         String priority = getSelectedPriority();
-
-        String category = spCategory.getSelectedItem().toString();
-
-        String reminder = spReminder.getSelectedItem().toString();
 
         if (title.isEmpty()) {
             etTaskTitle.setError("Enter task title");
@@ -273,7 +310,7 @@ public class AddTaskActivity extends AppCompatActivity {
             return;
         }
 
-        // Create Task object
+        // Create Task object.
         Task task = new Task(
                 title,
                 description,
@@ -281,7 +318,7 @@ public class AddTaskActivity extends AppCompatActivity {
                 priority
         );
 
-        // Save existing supported fields in SQLite
+        // Save task in SQLite.
         long result = taskDatabase.addTask(task);
 
         if (result != -1) {

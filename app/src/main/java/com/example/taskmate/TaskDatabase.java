@@ -49,8 +49,7 @@ public class TaskDatabase extends SQLiteOpenHelper {
             int oldVersion,
             int newVersion
     ) {
-        // Preserve existing data when database changes.
-        // Add migration logic here when the schema changes.
+        // Add database migration logic here when required.
     }
 
     // Add a new task.
@@ -59,6 +58,7 @@ public class TaskDatabase extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues values = new ContentValues();
+
         values.put(COL_TITLE, task.getTitle());
         values.put(COL_DESCRIPTION, task.getDescription());
         values.put(COL_DUE_DATE, task.getDueDate());
@@ -72,6 +72,7 @@ public class TaskDatabase extends SQLiteOpenHelper {
     public List<Task> getAllTasks() {
 
         List<Task> taskList = new ArrayList<>();
+
         SQLiteDatabase db = getReadableDatabase();
 
         try (Cursor cursor = db.query(
@@ -126,12 +127,68 @@ public class TaskDatabase extends SQLiteOpenHelper {
         return taskList;
     }
 
+    // Get one task using its ID.
+    public Task getTaskById(int taskId) {
+
+        SQLiteDatabase db = getReadableDatabase();
+
+        try (Cursor cursor = db.query(
+                TABLE_TASKS,
+                null,
+                COL_ID + " = ?",
+                new String[]{String.valueOf(taskId)},
+                null,
+                null,
+                null
+        )) {
+
+            if (cursor.moveToFirst()) {
+
+                int id = cursor.getInt(
+                        cursor.getColumnIndexOrThrow(COL_ID)
+                );
+
+                String title = cursor.getString(
+                        cursor.getColumnIndexOrThrow(COL_TITLE)
+                );
+
+                String description = cursor.getString(
+                        cursor.getColumnIndexOrThrow(COL_DESCRIPTION)
+                );
+
+                String dueDate = cursor.getString(
+                        cursor.getColumnIndexOrThrow(COL_DUE_DATE)
+                );
+
+                String priority = cursor.getString(
+                        cursor.getColumnIndexOrThrow(COL_PRIORITY)
+                );
+
+                boolean completed = cursor.getInt(
+                        cursor.getColumnIndexOrThrow(COL_COMPLETED)
+                ) == 1;
+
+                return new Task(
+                        id,
+                        title,
+                        description,
+                        dueDate,
+                        priority,
+                        completed
+                );
+            }
+        }
+
+        return null;
+    }
+
     // Update an existing task.
     public int updateTask(Task task) {
 
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues values = new ContentValues();
+
         values.put(COL_TITLE, task.getTitle());
         values.put(COL_DESCRIPTION, task.getDescription());
         values.put(COL_DUE_DATE, task.getDueDate());
@@ -164,6 +221,7 @@ public class TaskDatabase extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues values = new ContentValues();
+
         values.put(COL_COMPLETED, completed ? 1 : 0);
 
         return db.update(
@@ -178,6 +236,7 @@ public class TaskDatabase extends SQLiteOpenHelper {
     public List<Task> searchTasks(String keyword) {
 
         List<Task> taskList = new ArrayList<>();
+
         SQLiteDatabase db = getReadableDatabase();
 
         String searchValue = "%" + keyword + "%";

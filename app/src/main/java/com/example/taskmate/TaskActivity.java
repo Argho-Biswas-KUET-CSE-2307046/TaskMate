@@ -29,6 +29,7 @@ public class TaskActivity extends AppCompatActivity {
 
     private LinearLayout actionAddTask;
     private LinearLayout actionProgress;
+    private LinearLayout actionFocus;
 
     private LinearLayout navTasks;
     private LinearLayout navProgress;
@@ -66,6 +67,7 @@ public class TaskActivity extends AppCompatActivity {
 
         actionAddTask = findViewById(R.id.actionAddTask);
         actionProgress = findViewById(R.id.actionProgress);
+        actionFocus = findViewById(R.id.actionFocus);
 
         navTasks = findViewById(R.id.navTasks);
         navProgress = findViewById(R.id.navProgress);
@@ -128,6 +130,17 @@ public class TaskActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    // Open the Focus Timer screen.
+    private void openFocusTimer() {
+
+        Intent intent = new Intent(
+                TaskActivity.this,
+                FocusTimerActivity.class
+        );
+
+        startActivity(intent);
+    }
+
     // Connect dashboard buttons.
     private void setupNavigation() {
 
@@ -152,6 +165,9 @@ public class TaskActivity extends AppCompatActivity {
 
             startActivity(intent);
         });
+
+        // Focus Timer.
+        actionFocus.setOnClickListener(v -> openFocusTimer());
 
         // Bottom navigation: My Tasks.
         navTasks.setOnClickListener(v -> openTasks());

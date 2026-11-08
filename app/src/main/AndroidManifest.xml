@@ -7,6 +7,25 @@
     <!-- Notification permission -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!-- Foreground Service permissions -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+
+    <!-- Exact alarm permission -->
+    <uses-permission
+        android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
+    <!-- Receive notification after device restart -->
+    <uses-permission
+        android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- Keep CPU awake during alarm playback -->
+    <uses-permission
+        android:name="android.permission.WAKE_LOCK" />
+
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -14,6 +33,7 @@
         android:label="TaskMate"
         android:supportsRtl="true"
         android:theme="@style/Theme.TaskMate">
+
 
         <!-- Main launcher activity -->
         <activity
@@ -26,6 +46,7 @@
             </intent-filter>
 
         </activity>
+
 
         <!-- Authentication activities -->
         <activity
@@ -43,6 +64,7 @@
         <activity
             android:name=".ResetPasswordActivity"
             android:exported="false" />
+
 
         <!-- Dashboard and task activities -->
         <activity
@@ -69,10 +91,51 @@
             android:name=".ProgressActivity"
             android:exported="false" />
 
+
         <!-- Profile activity -->
         <activity
             android:name=".ProfileActivity"
             android:exported="false" />
+
+
+        <!-- Focus Timer activity -->
+        <activity
+            android:name=".FocusTimerActivity"
+            android:exported="false" />
+
+
+        <!-- Focus Timer foreground service -->
+        <service
+            android:name=".FocusTimerService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Runs a user-started focus countdown and alarm." />
+
+        </service>
+
+
+        <!-- Receives scheduled timer alarms -->
+        <receiver
+            android:name=".AlarmReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+
+        <!-- Restores timer after device restart -->
+        <receiver
+            android:name=".BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+
+        </receiver>
+
 
     </application>
 

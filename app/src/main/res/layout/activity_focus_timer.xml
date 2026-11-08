@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="20dp">
+
+            <!-- Back button -->
+            <TextView
+                android:id="@+id/btnFocusBack"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="‹  Back"
+                android:textSize="16sp"
+                android:textColor="#333333"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <!-- Heading -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Focus Timer"
+                android:textSize="27sp"
+                android:textStyle="bold"
+                android:textColor="#222222"
+                android:layout_marginTop="10dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Stay focused. Achieve more."
+                android:textSize="13sp"
+                android:textColor="#999999"
+                android:layout_marginTop="5dp"/>
+
+            <!-- Circular timer -->
+            <FrameLayout
+                android:layout_width="240dp"
+                android:layout_height="240dp"
+                android:layout_marginTop="24dp">
+
+                <com.example.taskmate.CircularProgressView
+                    android:id="@+id/circularProgress"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_gravity="center">
+
+                    <TextView
+                        android:id="@+id/tvTimer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="25:00"
+                        android:textSize="38sp"
+                        android:textStyle="bold"
+                        android:textColor="#24213A"/>
+
+                    <TextView
+                        android:id="@+id/tvTimerStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ready to focus"
+                        android:textSize="12sp"
+                        android:textColor="#888888"
+                        android:layout_marginTop="5dp"/>
+
+                </LinearLayout>
+
+            </FrameLayout>
+
+            <!-- Session selection -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Choose your session"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#222222"
+                android:layout_marginTop="24dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp">
+
+                <Button
+                    android:id="@+id/btn25Min"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:text="25 min"
+                    android:textAllCaps="false"
+                    android:textSize="13sp"
+                    android:textColor="#FFFFFF"
+                    android:backgroundTint="#8957E5"/>
+
+                <Space
+                    android:layout_width="10dp"
+                    android:layout_height="1dp"/>
+
+                <Button
+                    android:id="@+id/btn50Min"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:text="50 min"
+                    android:textAllCaps="false"
+                    android:textSize="13sp"
+                    android:textColor="#8957E5"
+                    android:backgroundTint="#F0EAFE"/>
+
+            </LinearLayout>
+
+            <!-- Custom timer -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Custom duration (minutes)"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#222222"
+                android:layout_marginTop="22dp"/>
+
+            <EditText
+                android:id="@+id/etCustomMinutes"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="Enter minutes"
+                android:inputType="number"
+                android:singleLine="true"
+                android:padding="10dp"
+                android:textSize="15sp"
+                android:backgroundTint="#8957E5"/>
+
+            <Button
+                android:id="@+id/btnCustom"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:text="Set Custom Timer"
+                android:textAllCaps="false"
+                android:textColor="#8957E5"
+                android:backgroundTint="#F0EAFE"
+                android:layout_marginTop="8dp"/>
+
+            <!-- Timer controls -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="22dp"
+                android:layout_marginBottom="20dp">
+
+                <Button
+                    android:id="@+id/btnStart"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:text="Start"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:backgroundTint="#8957E5"/>
+
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="1dp"/>
+
+                <Button
+                    android:id="@+id/btnPause"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:text="Pause"
+                    android:textAllCaps="false"
+                    android:textColor="#8957E5"
+                    android:backgroundTint="#F0EAFE"/>
+
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="1dp"/>
+
+                <Button
+                    android:id="@+id/btnReset"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:text="Reset"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:backgroundTint="#555555"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

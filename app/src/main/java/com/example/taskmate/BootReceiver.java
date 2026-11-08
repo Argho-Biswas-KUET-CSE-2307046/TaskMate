@@ -4,11 +4,8 @@ package com.example.taskmate;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 public class BootReceiver extends BroadcastReceiver {
-
-    private static final String TAG = "BootReceiver";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -21,10 +18,22 @@ public class BootReceiver extends BroadcastReceiver {
 
         if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
 
-            Log.d(TAG, "Device restarted. Boot completed.");
+            // Retrieve the previously saved deadline.
+            long savedDeadline =
+                    AlarmScheduler.getSavedDeadline(context);
 
-            // Reminder rescheduling will be implemented
-            // in ReminderScheduler.java.
+            // No timer was saved.
+            if (savedDeadline <= 0) {
+                return;
+            }
+
+            // Restore the alarm using the saved deadline.
+            // If the deadline has passed, AlarmScheduler
+            // will schedule it to trigger immediately.
+            AlarmScheduler.scheduleDeadline(
+                    context,
+                    savedDeadline
+            );
         }
     }
 }

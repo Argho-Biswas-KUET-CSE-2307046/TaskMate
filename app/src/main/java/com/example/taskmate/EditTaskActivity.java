@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -35,6 +36,7 @@ public class EditTaskActivity extends AppCompatActivity {
     private TaskDatabase database;
     private Task currentTask;
 
+    // Stored in HH:mm format.
     private String selectedTime = "";
 
     @Override
@@ -50,7 +52,6 @@ public class EditTaskActivity extends AppCompatActivity {
         setupDatePicker();
         setupTimePicker();
 
-        // Receive the selected task ID.
         int taskId = getIntent().getIntExtra("taskId", -1);
 
         if (taskId == -1) {
@@ -66,14 +67,11 @@ public class EditTaskActivity extends AppCompatActivity {
 
         loadTask(taskId);
 
-        // Back arrow.
         tvEditBack.setOnClickListener(v -> finish());
 
-        // Update button.
-        btnUpdateTask.setOnClickListener(v -> updateTask());
-
-        // Cancel button.
         btnCancelEdit.setOnClickListener(v -> finish());
+
+        btnUpdateTask.setOnClickListener(v -> updateTask());
     }
 
     // Connect Java variables with XML views.
@@ -94,7 +92,7 @@ public class EditTaskActivity extends AppCompatActivity {
         tvEditBack = findViewById(R.id.tvEditBack);
     }
 
-    // Configure dropdown menus.
+    // Configure all dropdown menus.
     private void setupSpinners() {
 
         setSpinnerAdapter(
@@ -147,7 +145,7 @@ public class EditTaskActivity extends AppCompatActivity {
         spinner.setAdapter(adapter);
     }
 
-    // Select a dropdown value safely.
+    // Select an existing value in a Spinner.
     private void selectSpinnerItem(
             Spinner spinner,
             String value
@@ -170,7 +168,7 @@ public class EditTaskActivity extends AppCompatActivity {
         }
     }
 
-    // Load task information from SQLite.
+    // Load all task information from SQLite.
     private void loadTask(int taskId) {
 
         currentTask = database.getTaskById(taskId);
@@ -195,22 +193,56 @@ public class EditTaskActivity extends AppCompatActivity {
 
         etDueDate.setText(currentTask.getDueDate());
 
+        // Load saved due time.
+        selectedTime = currentTask.getDueTime() == null
+                ? ""
+                : currentTask.getDueTime();
+
+        etDueTime.setText(formatDisplayTime(selectedTime));
+
+        // Load saved dropdown values.
         selectSpinnerItem(
                 spPriority,
                 currentTask.getPriority()
         );
 
-        // These fields are not stored in the current database.
-        selectSpinnerItem(spCategory, "Other");
-        selectSpinnerItem(spReminder, "No reminder");
+        selectSpinnerItem(
+                spCategory,
+                currentTask.getCategory()
+        );
 
-        etDueTime.setText("");
+        selectSpinnerItem(
+                spReminder,
+                currentTask.getReminder()
+        );
     }
 
-    // Configure date picker.
+    // Convert HH:mm into a readable 12-hour time.
+    private String formatDisplayTime(String time) {
+
+        if (time == null || time.trim().isEmpty()) {
+            return "";
+        }
+
+        try {
+            SimpleDateFormat inputFormat =
+                    new SimpleDateFormat("HH:mm", Locale.US);
+
+            SimpleDateFormat outputFormat =
+                    new SimpleDateFormat("hh:mm a", Locale.getDefault());
+
+            return outputFormat.format(inputFormat.parse(time));
+
+        } catch (Exception e) {
+            return time;
+        }
+    }
+
+    // Open date picker.
     private void setupDatePicker() {
 
         etDueDate.setFocusable(false);
+        etDueDate.setClickable(true);
 
         etDueDate.setOnClickListener(v -> {
 
@@ -243,10 +275,11 @@ public class EditTaskActivity extends AppCompatActivity {
         });
     }
 
-    // Configure time picker.
+    // Open time picker.
     private void setupTimePicker() {
 
         etDueTime.setFocusable(false);
+        etDueTime.setClickable(true);
 
         etDueTime.setOnClickListener(v -> {
 
@@ -263,25 +296,9 @@ public class EditTaskActivity extends AppCompatActivity {
                                 minute
                         );
 
-                        Calendar displayTime = Calendar.getInstance();
-
-                        displayTime.set(
-                                Calendar.HOUR_OF_DAY,
-                                hour
+                        etDueTime.setText(
+                                formatDisplayTime(selectedTime)
                         );
-
-                        displayTime.set(
-                                Calendar.MINUTE,
-                                minute
-                        );
-
-                        String formattedTime =
-                                new java.text.SimpleDateFormat(
-                                        "hh:mm a",
-                                        Locale.getDefault()
-                                ).format(displayTime.getTime());
-
-                        etDueTime.setText(formattedTime);
                     },
                     calendar.get(Calendar.HOUR_OF_DAY),
                     calendar.get(Calendar.MINUTE),
@@ -292,7 +309,7 @@ public class EditTaskActivity extends AppCompatActivity {
         });
     }
 
-    // Update the existing task.
+    // Validate and update the existing task.
     private void updateTask() {
 
         if (currentTask == null) {
@@ -313,6 +330,10 @@ public class EditTaskActivity extends AppCompatActivity {
 
         String priority = spPriority.getSelectedItem().toString();
 
+        String category = spCategory.getSelectedItem().toString();
+
+        String reminder = spReminder.getSelectedItem().toString();
+
         if (title.isEmpty()) {
 
             etTaskTitle.setError("Enter a task title");
@@ -327,13 +348,16 @@ public class EditTaskActivity extends AppCompatActivity {
             return;
         }
 
-        // Update existing Task object.
+        // Update all seven task fields.
         currentTask.setTitle(title);
         currentTask.setDescription(description);
         currentTask.setDueDate(dueDate);
+        currentTask.setDueTime(selectedTime);
         currentTask.setPriority(priority);
+        currentTask.setCategory(category);
+        currentTask.setReminder(reminder);
 
-        // Save changes to SQLite.
+        // Save updated information in SQLite.
         int result = database.updateTask(currentTask);
 
         if (result > 0) {

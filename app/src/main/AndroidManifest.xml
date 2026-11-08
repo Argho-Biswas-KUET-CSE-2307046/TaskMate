@@ -1,6 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Internet permission for Firebase -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Notification permission -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
@@ -11,26 +15,64 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TaskMate">
 
+        <!-- Main launcher activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
 
-        <activity android:name=".SignUpActivity" android:exported="false" />
-        <activity android:name=".LoginActivity" android:exported="false" />
-        <activity android:name=".ForgotPasswordActivity" android:exported="false" />
-        <activity android:name=".ResetPasswordActivity" android:exported="false" />
+        <!-- Authentication activities -->
+        <activity
+            android:name=".SignUpActivity"
+            android:exported="false" />
 
-        <activity android:name=".TaskActivity" android:exported="false" />
-        <activity android:name=".TasksActivity" android:exported="false" />
-        <activity android:name=".AddTaskActivity" android:exported="false" />
-        <activity android:name=".TaskDetailsActivity" android:exported="false" />
-        <activity android:name=".EditTaskActivity" android:exported="false" />
-        <activity android:name=".ProgressActivity" android:exported="false" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ForgotPasswordActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ResetPasswordActivity"
+            android:exported="false" />
+
+        <!-- Dashboard and task activities -->
+        <activity
+            android:name=".TaskActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".TasksActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".AddTaskActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".TaskDetailsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".EditTaskActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ProgressActivity"
+            android:exported="false" />
+
+        <!-- Profile activity -->
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
 
     </application>
 

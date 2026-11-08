@@ -32,6 +32,7 @@ public class TaskActivity extends AppCompatActivity {
 
     private LinearLayout navTasks;
     private LinearLayout navProgress;
+    private LinearLayout navProfile;
 
     private TaskDatabase database;
 
@@ -68,6 +69,7 @@ public class TaskActivity extends AppCompatActivity {
 
         navTasks = findViewById(R.id.navTasks);
         navProgress = findViewById(R.id.navProgress);
+        navProfile = findViewById(R.id.navProfile);
     }
 
     // Display the logged-in user's name.
@@ -115,6 +117,17 @@ public class TaskActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    // Open the Profile screen.
+    private void openProfile() {
+
+        Intent intent = new Intent(
+                TaskActivity.this,
+                ProfileActivity.class
+        );
+
+        startActivity(intent);
+    }
+
     // Connect dashboard buttons.
     private void setupNavigation() {
 
@@ -156,6 +169,9 @@ public class TaskActivity extends AppCompatActivity {
 
             startActivity(intent);
         });
+
+        // Bottom navigation: Profile.
+        navProfile.setOnClickListener(v -> openProfile());
     }
 
     // Update dashboard statistics from SQLite.
@@ -198,6 +214,7 @@ public class TaskActivity extends AppCompatActivity {
 
         if (database != null) {
             updateStatistics();
+            showUserInformation();
         }
     }
 

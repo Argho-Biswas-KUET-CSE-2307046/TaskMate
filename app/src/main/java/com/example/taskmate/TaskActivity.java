@@ -3,9 +3,13 @@ package com.example.taskmate;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -13,6 +17,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class TaskActivity extends AppCompatActivity {
@@ -36,6 +41,7 @@ public class TaskActivity extends AppCompatActivity {
     private LinearLayout navProfile;
 
     private TaskDatabase database;
+    private FirebaseTaskRepository firebaseRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +54,10 @@ public class TaskActivity extends AppCompatActivity {
         showUserInformation();
         showCurrentDate();
         setupNavigation();
-
         updateStatistics();
+
+        initializeFirebase();
+        addFirebaseTestControls();
     }
 
     // Connect Java variables with XML views.
@@ -74,10 +82,42 @@ public class TaskActivity extends AppCompatActivity {
         navProfile = findViewById(R.id.navProfile);
     }
 
+    // Initialize Firebase repository.
+    private void initializeFirebase() {
+
+        FirebaseUser user =
+                FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user == null) {
+
+            Toast.makeText(
+                    this,
+                    "Please log in first.",
+                    Toast.LENGTH_LONG
+            ).show();
+
+            return;
+        }
+
+        try {
+
+            firebaseRepository = new FirebaseTaskRepository();
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    this,
+                    "Firebase initialization failed: " + e.getMessage(),
+                    Toast.LENGTH_LONG
+            ).show();
+        }
+    }
+
     // Display the logged-in user's name.
     private void showUserInformation() {
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user =
+                FirebaseAuth.getInstance().getCurrentUser();
 
         String name = "there";
 
@@ -144,7 +184,6 @@ public class TaskActivity extends AppCompatActivity {
     // Connect dashboard buttons.
     private void setupNavigation() {
 
-        // Add Task.
         actionAddTask.setOnClickListener(v -> {
 
             Intent intent = new Intent(
@@ -155,7 +194,6 @@ public class TaskActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // View Progress.
         actionProgress.setOnClickListener(v -> {
 
             Intent intent = new Intent(
@@ -166,16 +204,12 @@ public class TaskActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Focus Timer.
         actionFocus.setOnClickListener(v -> openFocusTimer());
 
-        // Bottom navigation: My Tasks.
         navTasks.setOnClickListener(v -> openTasks());
 
-        // View All Tasks.
         tvViewAll.setOnClickListener(v -> openTasks());
 
-        // Bottom navigation: Progress.
         navProgress.setOnClickListener(v -> {
 
             Intent intent = new Intent(
@@ -186,8 +220,301 @@ public class TaskActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Bottom navigation: Profile.
         navProfile.setOnClickListener(v -> openProfile());
+    }
+
+    // Add Firebase testing and synchronization buttons.
+    private void addFirebaseTestControls() {
+
+        // dashboardScroll is a ScrollView.
+        ScrollView root = findViewById(R.id.dashboardScroll);
+
+        if (root == null || root.getChildCount() == 0) {
+            return;
+        }
+
+        // Get the first child inside the ScrollView.
+        if (!(root.getChildAt(0) instanceof LinearLayout)) {
+            return;
+        }
+
+        LinearLayout content =
+                (LinearLayout) root.getChildAt(0);
+
+        // Prevent duplicate buttons.
+        if (content.findViewWithTag("firebase_test_heading") != null) {
+            return;
+        }
+
+        TextView heading = new TextView(this);
+
+        heading.setTag("firebase_test_heading");
+        heading.setText("Firebase Database Testing");
+        heading.setTextSize(18);
+        heading.setTextColor(0xFF21164B);
+        heading.setPadding(0, 24, 0, 12);
+
+        content.addView(heading);
+
+        Button uploadButton = new Button(this);
+        uploadButton.setText("Upload Test Task");
+
+        content.addView(uploadButton);
+
+        Button retrieveButton = new Button(this);
+        retrieveButton.setText("Retrieve Tasks");
+
+        content.addView(retrieveButton);
+
+        Button syncButton = new Button(this);
+        syncButton.setText("Sync Local Tasks to Firebase");
+
+        content.addView(syncButton);
+
+        uploadButton.setOnClickListener(v -> uploadTestTask());
+
+        retrieveButton.setOnClickListener(v -> retrieveTasks());
+
+        syncButton.setOnClickListener(v -> syncLocalTasksToFirebase());
+    }
+
+    // Upload a sample task to Firebase.
+    private void uploadTestTask() {
+
+        if (firebaseRepository == null) {
+
+            Toast.makeText(
+                    this,
+                    "Firebase is not initialized. Please log in.",
+                    Toast.LENGTH_LONG
+            ).show();
+
+            return;
+        }
+
+        int testId = (int)
+                (System.currentTimeMillis() % 2000000000L) + 1;
+
+        Task testTask = new Task(
+                testId,
+                "Firebase Test Task",
+                "This task was uploaded from TaskMate.",
+                new SimpleDateFormat(
+                        "yyyy-MM-dd",
+                        Locale.getDefault()
+                ).format(new Date()),
+                "10:00",
+                "High",
+                "Testing",
+                "No reminder",
+                false
+        );
+
+        Toast.makeText(
+                this,
+                "Uploading test task...",
+                Toast.LENGTH_SHORT
+        ).show();
+
+        firebaseRepository.uploadTask(
+                testTask,
+                new FirebaseTaskRepository.OperationCallback() {
+
+                    @Override
+                    public void onSuccess() {
+
+                        Toast.makeText(
+                                TaskActivity.this,
+                                "Test task uploaded successfully!",
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+
+                        Toast.makeText(
+                                TaskActivity.this,
+                                "Upload failed: " + error,
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                }
+        );
+    }
+
+    // Retrieve tasks from Firebase.
+    private void retrieveTasks() {
+
+        if (firebaseRepository == null) {
+
+            Toast.makeText(
+                    this,
+                    "Firebase is not initialized.",
+                    Toast.LENGTH_LONG
+            ).show();
+
+            return;
+        }
+
+        firebaseRepository.getAllTasks(
+                new FirebaseTaskRepository.TasksCallback() {
+
+                    @Override
+                    public void onSuccess(List<Task> tasks) {
+
+                        if (tasks.isEmpty()) {
+
+                            Toast.makeText(
+                                    TaskActivity.this,
+                                    "No cloud tasks found.",
+                                    Toast.LENGTH_LONG
+                            ).show();
+
+                            return;
+                        }
+
+                        StringBuilder result = new StringBuilder();
+
+                        for (Task task : tasks) {
+
+                            result.append("Title: ")
+                                    .append(task.getTitle())
+                                    .append("\n");
+
+                            result.append("Priority: ")
+                                    .append(task.getPriority())
+                                    .append("\n");
+
+                            result.append("Completed: ")
+                                    .append(task.isCompleted())
+                                    .append("\n\n");
+                        }
+
+                        new AlertDialog.Builder(TaskActivity.this)
+                                .setTitle(
+                                        "Firebase Tasks (" +
+                                                tasks.size() + ")"
+                                )
+                                .setMessage(result.toString())
+                                .setPositiveButton("OK", null)
+                                .show();
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+
+                        Toast.makeText(
+                                TaskActivity.this,
+                                "Retrieval failed: " + error,
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                }
+        );
+    }
+
+    // Upload all existing SQLite tasks to Firebase.
+    private void syncLocalTasksToFirebase() {
+
+        if (firebaseRepository == null) {
+
+            Toast.makeText(
+                    this,
+                    "Firebase is not initialized.",
+                    Toast.LENGTH_LONG
+            ).show();
+
+            return;
+        }
+
+        // Retrieve all tasks from the local SQLite database.
+        List<Task> localTasks = database.getAllTasks();
+
+        if (localTasks.isEmpty()) {
+
+            Toast.makeText(
+                    this,
+                    "No local tasks found.",
+                    Toast.LENGTH_LONG
+            ).show();
+
+            return;
+        }
+
+        Toast.makeText(
+                this,
+                "Syncing " + localTasks.size() + " tasks...",
+                Toast.LENGTH_SHORT
+        ).show();
+
+        final int totalTasks = localTasks.size();
+
+        final int[] completedUploads = {0};
+        final int[] failedUploads = {0};
+
+        for (Task task : localTasks) {
+
+            firebaseRepository.uploadTask(
+                    task,
+                    new FirebaseTaskRepository.OperationCallback() {
+
+                        @Override
+                        public void onSuccess() {
+
+                            completedUploads[0]++;
+
+                            checkSyncCompletion(
+                                    totalTasks,
+                                    completedUploads[0],
+                                    failedUploads[0]
+                            );
+                        }
+
+                        @Override
+                        public void onFailure(String error) {
+
+                            failedUploads[0]++;
+
+                            checkSyncCompletion(
+                                    totalTasks,
+                                    completedUploads[0],
+                                    failedUploads[0]
+                            );
+                        }
+                    }
+            );
+        }
+    }
+
+    // Display the final synchronization result.
+    private void checkSyncCompletion(
+            int totalTasks,
+            int successfulUploads,
+            int failedUploads
+    ) {
+
+        if (successfulUploads + failedUploads == totalTasks) {
+
+            String message;
+
+            if (failedUploads == 0) {
+
+                message = successfulUploads +
+                        " tasks synced successfully!";
+
+            } else {
+
+                message = successfulUploads + " successful, " +
+                        failedUploads + " failed.";
+            }
+
+            Toast.makeText(
+                    TaskActivity.this,
+                    message,
+                    Toast.LENGTH_LONG
+            ).show();
+        }
     }
 
     // Update dashboard statistics from SQLite.

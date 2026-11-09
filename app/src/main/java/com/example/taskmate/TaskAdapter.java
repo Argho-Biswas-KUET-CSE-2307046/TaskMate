@@ -1,6 +1,7 @@
 
 package com.example.taskmate;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,9 +34,11 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             List<Task> taskList,
             OnTaskStatusChangedListener listener
     ) {
+
         this.context = context;
         this.taskList = new ArrayList<>(taskList);
         this.listener = listener;
+
         this.database = new TaskDatabase(context);
     }
 
@@ -121,15 +125,35 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         holder.cbTaskCompleted.setOnCheckedChangeListener(
                 (buttonView, isChecked) -> {
 
-                    database.updateTaskStatus(
+                    int result = database.updateTaskStatus(
                             task.getId(),
                             isChecked
                     );
 
-                    task.setCompleted(isChecked);
+                    if (result > 0) {
 
-                    if (listener != null) {
-                        listener.onTaskStatusChanged();
+                        task.setCompleted(isChecked);
+
+                        if (isChecked) {
+
+                            // Cancel reminder when task is completed.
+                            TaskReminderScheduler.cancelReminder(
+                                    context,
+                                    task.getId()
+                            );
+
+                        } else {
+
+                            // Schedule reminder again if task becomes pending.
+                            TaskReminderScheduler.scheduleReminder(
+                                    context,
+                                    task
+                            );
+                        }
+
+                        if (listener != null) {
+                            listener.onTaskStatusChanged();
+                        }
                     }
                 }
         );
@@ -146,6 +170,82 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
             context.startActivity(intent);
         });
+
+        // Delete task using long press.
+        holder.itemView.setOnLongClickListener(v -> {
+
+            int currentPosition = holder.getBindingAdapterPosition();
+
+            if (currentPosition == RecyclerView.NO_POSITION) {
+                return true;
+            }
+
+            Task selectedTask = taskList.get(currentPosition);
+
+            showDeleteConfirmation(selectedTask);
+
+            return true;
+        });
+    }
+
+    // Show confirmation before deleting a task.
+    private void showDeleteConfirmation(Task task) {
+
+        new AlertDialog.Builder(context)
+                .setTitle("Delete Task")
+                .setMessage(
+                        "Are you sure you want to delete \""
+                                + task.getTitle() + "\"?"
+                )
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    dialog.dismiss();
+                })
+                .setPositiveButton("Delete", (dialog, which) -> {
+
+                    // Delete from SQLite and cancel scheduled reminder.
+                    int result = database.deleteTask(task.getId());
+
+                    if (result > 0) {
+
+                        // Find the task in the adapter list.
+                        int deletedPosition = -1;
+
+                        for (int i = 0; i < taskList.size(); i++) {
+
+                            if (taskList.get(i).getId() == task.getId()) {
+                                deletedPosition = i;
+                                break;
+                            }
+                        }
+
+                        // Remove task from RecyclerView.
+                        if (deletedPosition != -1) {
+
+                            taskList.remove(deletedPosition);
+
+                            notifyItemRemoved(deletedPosition);
+                        }
+
+                        Toast.makeText(
+                                context,
+                                "Task deleted successfully.",
+                                Toast.LENGTH_SHORT
+                        ).show();
+
+                        if (listener != null) {
+                            listener.onTaskStatusChanged();
+                        }
+
+                    } else {
+
+                        Toast.makeText(
+                                context,
+                                "Unable to delete task.",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                })
+                .show();
     }
 
     @Override

@@ -13,6 +13,10 @@ public class Task {
     private String reminder;
     private boolean completed;
 
+    // Empty constructor required by Firebase.
+    public Task() {
+    }
+
     // Constructor for creating a new task.
     public Task(String title, String description,
                 String dueDate, String priority) {
@@ -21,7 +25,7 @@ public class Task {
                 priority, "Other", "No reminder");
     }
 
-    // New constructor with all task information.
+    // Constructor with all task information.
     public Task(String title, String description,
                 String dueDate, String dueTime,
                 String priority, String category,
@@ -46,7 +50,7 @@ public class Task {
                 priority, "Other", "No reminder", completed);
     }
 
-    // New constructor for loading all saved task information.
+    // Constructor for loading all saved task information.
     public Task(int id, String title, String description,
                 String dueDate, String dueTime,
                 String priority, String category,
@@ -64,6 +68,7 @@ public class Task {
     }
 
     // Getters
+
     public int getId() {
         return id;
     }
@@ -101,6 +106,7 @@ public class Task {
     }
 
     // Setters
+
     public void setId(int id) {
         this.id = id;
     }

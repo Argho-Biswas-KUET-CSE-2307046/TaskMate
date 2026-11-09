@@ -194,7 +194,8 @@ public class AddTaskActivity extends AppCompatActivity {
                                 );
 
                                 // Display time in 12-hour format.
-                                Calendar displayTime = Calendar.getInstance();
+                                Calendar displayTime =
+                                        Calendar.getInstance();
 
                                 displayTime.set(
                                         Calendar.HOUR_OF_DAY,
@@ -289,12 +290,14 @@ public class AddTaskActivity extends AppCompatActivity {
     // Validate and save task.
     private void saveTask() {
 
-        String title = etTaskTitle.getText().toString().trim();
+        String title =
+                etTaskTitle.getText().toString().trim();
 
         String description =
                 etTaskDescription.getText().toString().trim();
 
-        String dueDate = etDueDate.getText().toString().trim();
+        String dueDate =
+                etDueDate.getText().toString().trim();
 
         String dueTime = selectedTime;
 
@@ -322,7 +325,23 @@ public class AddTaskActivity extends AppCompatActivity {
             return;
         }
 
-        // Create Task object with all information.
+        // A reminder requires a selected time.
+        if (!reminder.equals("No reminder") &&
+                dueTime.isEmpty()) {
+
+            etDueTime.setError("Select task time");
+            etDueTime.requestFocus();
+
+            Toast.makeText(
+                    this,
+                    "Select a task time for the reminder.",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        // Create Task object.
         Task task = new Task(
                 title,
                 description,
@@ -338,9 +357,20 @@ public class AddTaskActivity extends AppCompatActivity {
 
         if (result != -1) {
 
+            // Assign the generated SQLite ID.
+            task.setId((int) result);
+
+            // Schedule the reminder.
+            TaskReminderScheduler.scheduleReminder(
+                    this,
+                    task
+            );
+
             Toast.makeText(
                     this,
-                    "Task saved successfully!",
+                    reminder.equals("No reminder")
+                            ? "Task saved successfully!"
+                            : "Task saved and reminder scheduled!",
                     Toast.LENGTH_SHORT
             ).show();
 

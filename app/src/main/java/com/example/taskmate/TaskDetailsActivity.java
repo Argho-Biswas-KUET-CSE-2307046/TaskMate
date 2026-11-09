@@ -17,7 +17,7 @@ public class TaskDetailsActivity extends AppCompatActivity {
     private TextView tvPriority;
     private TextView tvTaskStatus;
 
-    // New information fields.
+    // Additional information fields.
     private TextView tvDueTime;
     private TextView tvCategory;
     private TextView tvReminder;
@@ -41,7 +41,7 @@ public class TaskDetailsActivity extends AppCompatActivity {
         tvPriority = findViewById(R.id.tvPriority);
         tvTaskStatus = findViewById(R.id.tvTaskStatus);
 
-        // Initialize new views.
+        // Initialize additional views.
         tvDueTime = findViewById(R.id.tvDueTime);
         tvCategory = findViewById(R.id.tvCategory);
         tvReminder = findViewById(R.id.tvReminder);
@@ -94,6 +94,10 @@ public class TaskDetailsActivity extends AppCompatActivity {
                 return;
             }
 
+            if (currentTask.isCompleted()) {
+                return;
+            }
+
             int result = database.updateTaskStatus(
                     currentTask.getId(),
                     true
@@ -103,11 +107,18 @@ public class TaskDetailsActivity extends AppCompatActivity {
 
                 currentTask.setCompleted(true);
 
+                // Cancel the scheduled reminder.
+                TaskReminderScheduler.cancelReminder(
+                        this,
+                        currentTask.getId()
+                );
+
+                // Update task status on screen.
                 updateStatusDisplay();
 
                 Toast.makeText(
                         this,
-                        "Task marked as completed!",
+                        "Task completed! Reminder cancelled.",
                         Toast.LENGTH_SHORT
                 ).show();
 

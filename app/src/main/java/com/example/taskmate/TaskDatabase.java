@@ -13,8 +13,6 @@ import java.util.List;
 public class TaskDatabase extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "taskmate.db";
-
-    // Increased from version 1 to version 2.
     private static final int DATABASE_VERSION = 2;
 
     private static final String TABLE_TASKS = "tasks";
@@ -29,8 +27,13 @@ public class TaskDatabase extends SQLiteOpenHelper {
     private static final String COL_REMINDER = "reminder";
     private static final String COL_COMPLETED = "completed";
 
+    // Store application context.
+    private final Context appContext;
+
     public TaskDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+
+        appContext = context.getApplicationContext();
     }
 
     // Create the database for new installations.
@@ -225,8 +228,14 @@ public class TaskDatabase extends SQLiteOpenHelper {
         );
     }
 
-    // Delete a task by its ID.
+    // Delete a task and cancel its scheduled reminder.
     public int deleteTask(int taskId) {
+
+        // Cancel the scheduled reminder.
+        TaskReminderScheduler.cancelReminder(
+                appContext,
+                taskId
+        );
 
         SQLiteDatabase db = getWritableDatabase();
 
@@ -296,6 +305,7 @@ public class TaskDatabase extends SQLiteOpenHelper {
         return getTaskCount(COL_COMPLETED + " = 0");
     }
 
+    // Get task count using a selection condition.
     private int getTaskCount(String selection) {
 
         SQLiteDatabase db = getReadableDatabase();

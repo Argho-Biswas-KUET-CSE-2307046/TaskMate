@@ -35,7 +35,6 @@ android {
 }
 
 dependencies {
-
     // Android libraries
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
@@ -43,9 +42,17 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.core:core:1.12.0")
 
-    // Firebase
+    // Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:35.1.0"))
+
+    // Firebase Authentication
     implementation("com.google.firebase:firebase-auth")
+
+    // Firebase Realtime Database
+    implementation("com.google.firebase:firebase-database")
+
+    // Firebase Cloud Storage
+    implementation("com.google.firebase:firebase-storage")
 
     // Unit testing
     testImplementation("junit:junit:4.13.2")

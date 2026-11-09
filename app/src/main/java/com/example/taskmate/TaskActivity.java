@@ -1,4 +1,3 @@
-
 package com.example.taskmate;
 
 import android.content.Intent;
@@ -58,6 +57,9 @@ public class TaskActivity extends AppCompatActivity {
 
         initializeFirebase();
         addFirebaseTestControls();
+
+        // Add navigation buttons for the new features.
+        addFeatureNavigationControls();
     }
 
     // Connect Java variables with XML views.
@@ -181,6 +183,39 @@ public class TaskActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    // Open the JSON/XML Parsing screen.
+    private void openDataParsing() {
+
+        Intent intent = new Intent(
+                TaskActivity.this,
+                DataParsingActivity.class
+        );
+
+        startActivity(intent);
+    }
+
+    // Open the HTTP Operations screen.
+    private void openApi() {
+
+        Intent intent = new Intent(
+                TaskActivity.this,
+                ApiActivity.class
+        );
+
+        startActivity(intent);
+    }
+
+    // Open the Firebase Storage screen.
+    private void openStorage() {
+
+        Intent intent = new Intent(
+                TaskActivity.this,
+                StorageActivity.class
+        );
+
+        startActivity(intent);
+    }
+
     // Connect dashboard buttons.
     private void setupNavigation() {
 
@@ -226,14 +261,12 @@ public class TaskActivity extends AppCompatActivity {
     // Add Firebase testing and synchronization buttons.
     private void addFirebaseTestControls() {
 
-        // dashboardScroll is a ScrollView.
         ScrollView root = findViewById(R.id.dashboardScroll);
 
         if (root == null || root.getChildCount() == 0) {
             return;
         }
 
-        // Get the first child inside the ScrollView.
         if (!(root.getChildAt(0) instanceof LinearLayout)) {
             return;
         }
@@ -276,6 +309,62 @@ public class TaskActivity extends AppCompatActivity {
         retrieveButton.setOnClickListener(v -> retrieveTasks());
 
         syncButton.setOnClickListener(v -> syncLocalTasksToFirebase());
+    }
+
+    // Add navigation buttons for the three new features.
+    private void addFeatureNavigationControls() {
+
+        ScrollView root = findViewById(R.id.dashboardScroll);
+
+        if (root == null || root.getChildCount() == 0) {
+            return;
+        }
+
+        if (!(root.getChildAt(0) instanceof LinearLayout)) {
+            return;
+        }
+
+        LinearLayout content =
+                (LinearLayout) root.getChildAt(0);
+
+        // Prevent duplicate feature buttons.
+        if (content.findViewWithTag("feature_navigation_heading") != null) {
+            return;
+        }
+
+        TextView heading = new TextView(this);
+
+        heading.setTag("feature_navigation_heading");
+        heading.setText("Additional Features");
+        heading.setTextSize(18);
+        heading.setTextColor(0xFF21164B);
+        heading.setPadding(0, 24, 0, 12);
+
+        content.addView(heading);
+
+        // JSON and XML Parsing button.
+        Button parsingButton = new Button(this);
+        parsingButton.setText("JSON / XML Parsing");
+
+        content.addView(parsingButton);
+
+        parsingButton.setOnClickListener(v -> openDataParsing());
+
+        // HTTP Operations button.
+        Button apiButton = new Button(this);
+        apiButton.setText("HTTP Operations");
+
+        content.addView(apiButton);
+
+        apiButton.setOnClickListener(v -> openApi());
+
+        // Firebase Storage button.
+        Button storageButton = new Button(this);
+        storageButton.setText("Firebase Storage");
+
+        content.addView(storageButton);
+
+        storageButton.setOnClickListener(v -> openStorage());
     }
 
     // Upload a sample task to Firebase.

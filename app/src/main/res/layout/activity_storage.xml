@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Local Image Storage"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:layout_marginBottom="20dp" />
+
+        <ImageView
+            android:id="@+id/imagePreview"
+            android:layout_width="220dp"
+            android:layout_height="220dp"
+            android:background="#EEEEEE"
+            android:scaleType="centerCrop"
+            android:contentDescription="Selected image preview" />
+
+        <Button
+            android:id="@+id/btnSelectImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Image"
+            android:layout_marginTop="20dp" />
+
+        <Button
+            android:id="@+id/btnUploadImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save Image"
+            android:layout_marginTop="10dp" />
+
+        <ProgressBar
+            android:id="@+id/storageProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_marginTop="15dp" />
+
+        <TextView
+            android:id="@+id/tvStorageStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No image selected."
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:layout_marginTop="20dp"
+            android:textIsSelectable="true" />
+
+        <TextView
+            android:id="@+id/tvDownloadUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="14sp"
+            android:textColor="#1565C0"
+            android:layout_marginTop="12dp"
+            android:textIsSelectable="true" />
+
+    </LinearLayout>
+
+</ScrollView>

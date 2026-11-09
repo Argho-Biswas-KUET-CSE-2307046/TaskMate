@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Internet permission for Firebase -->
+    <!-- Internet permission for Firebase and HTTP operations -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- Notification permission -->
@@ -93,6 +93,21 @@
         <!-- Focus Timer activity -->
         <activity
             android:name=".FocusTimerActivity"
+            android:exported="false" />
+
+        <!-- JSON and XML Parsing activity -->
+        <activity
+            android:name=".DataParsingActivity"
+            android:exported="false" />
+
+        <!-- HTTP Operations activity -->
+        <activity
+            android:name=".ApiActivity"
+            android:exported="false" />
+
+        <!-- Firebase Storage activity -->
+        <activity
+            android:name=".StorageActivity"
             android:exported="false" />
 
         <!-- Focus Timer foreground service -->
